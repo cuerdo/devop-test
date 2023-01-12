@@ -1,0 +1,52 @@
+name: test
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: List files in the repository
+        run: |
+          ls ${{ github.workspace }}/
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt upgrade
+          sudo apt install docker-compose git openssh-client
+
+      - name: Build Image
+        uses: docker/build-push-action@v2
+        with:
+          load: true
+          tags: hello-world:test
+
+      - name: Create k8s Kind Cluster
+        uses: helm/kind-action@v1.4.0
+        with:
+          config: ${{ github.workspace }}/cluster.yml
+
+      - name: Check cluster
+        run: |
+          kind get clusters
+
+
+      - name: Test Image
+        run: |
+          kind load docker-image hello-world:test --name=chart-testing
+          kubectl apply -f ${{ github.workspace }}/site-deployment.yml
+          kubectl apply -f ${{ github.workspace }}/site-service.yml
+          sleep 5
+          curl localhost:30950
+
