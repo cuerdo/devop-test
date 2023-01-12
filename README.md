@@ -16,7 +16,7 @@
 - Finally, invite the interviewers to the repository.
 
 
-## How ran this project
+# How run this project
 
 ### The setup
 
@@ -73,6 +73,7 @@ $ kubectl apply -f site-deployment.yml
 ```
 $ kubectl get events -w
 ```
+## Testing
 
 * Check availability
 ```
