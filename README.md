@@ -46,6 +46,11 @@ $ kind create cluster --config cluster.yml
 ```
 $ kind get clusters
 ```
+expected outcome:
+```
+static
+```
+
 
 ## Build and run
 * Build hello-world image
@@ -56,6 +61,13 @@ $ docker build -t hello-world:test .
 * Check docker images
 ```
 $ docker images
+```
+
+expected outcome:
+```
+hello-world    test              8e387745b6ff   10 hours ago   40.7MB
+nginx          mainline-alpine   c433c51bbd66   3 days ago     40.7MB
+kindest/node   <none>            d8644f660df0   2 months ago   898MB
 ```
 
 * Load the image into kind cluster
@@ -71,7 +83,12 @@ $ kubectl apply -f site-deployment.yml
 
 * Wait until container is up
 ```
-$ kubectl get events -w
+$ kubectl get pods
+```
+expected outcome:
+```
+NAME                           READY   STATUS    RESTARTS        AGE
+hello-world-795b9fbdfb-wcssv   1/1     Running   10 secs   8h
 ```
 ## Testing
 
